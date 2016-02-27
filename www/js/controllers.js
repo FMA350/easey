@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('LoginCtrl', function($scope, $ionicModal, $timeout) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -31,14 +31,31 @@ angular.module('starter.controllers', [])
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
+    console.log('Doing login for', $scope.loginData.username);
+		// gather information on the localStorage and try to fetch data from the website
+		if(valid&&localLogin){
+			//TODO: grant access
+		}
 
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
   };
+
+	localLogin = function(usernameL, passwordL){
+		//fetch password form localStorage
+		// TODO: upgrade to SQlite
+		// TODO: Use a Hash to store/fetch the password
+			if(passwordL === window.localStorage['usernameL']){
+				return true;
+			}
+			return false;
+	};
+
+	FacebookLogin = function(){
+		// TODO: check for a tocken on the phone first
+		// TODO: connect to facebook apis
+		return false;
+	}
+
+
 })
 
 .controller('PlaylistsCtrl', function($scope) {
