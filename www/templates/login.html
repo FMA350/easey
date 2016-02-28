@@ -1,31 +1,37 @@
-<ion-modal-view>
-	<!--Two tabs, login and Sign up.
-Need to implement a controller on this  -->
-  <ion-header-bar>
-    <h1 class="title">Login</h1>
-    <div class="buttons">
-    </div>
-  </ion-header-bar>
-  <ion-content>
+<ion-view name="login">
+		<ion-header-bar align-title='center' class="bar-positive">
+			<h1 class="title">Login</h1>
+		</ion-header-bar>
+		<ion-content class="has-header" on-swipe-right="onSwipeRight()">
 		<span></span>
-    <form ng-submit="doLogin()">
+    <form name="formUsername" ng-submit="doLogin()" novalidate>
       <div class="list">
         <label class="item item-input item-floating-label" >
           <span class="input-label"></span>
-          <input type="text" ng-model="loginData.username" placeholder="Username">
+          <input type="text" name="username" ng-model="loginData.username" placeholder="Username">
         </label>
         <label class="item item-input item-floating-label">
           <span class="input-label"></span>
           <input type="password" ng-model="loginData.password" placeholder="Password">
         </label>
         <label class="item">
-          <button class="button button-block button-positive button-outline" type="submit">Log in</button>
+          <button class="button button-block button-positive button-outline icon-right ion-log-in" type="submit">Log in</button>
 		</form>
 		<form ng-submit="doLoginFacebook()">
 					<button class="button button-block button-positive" type="submit">Log in with Facebook</button>
 				</form>
         </label>
       </div>
-
   </ion-content>
-</ion-modal-view>
+	<ion-footer-bar>
+<div class="icon-bar footer-bar block">
+			<a href="/#/login">     <ion-icon class="button button-icon ion-ios-circle-outline"></ion-icon></a>
+			<a href="/#/signup"> 		<ion-icon class="button button-icon ion-ios-circle-filled"></ion-icon></a>
+</div>
+	</ion-footer-bar>
+	<!--Tabs must always go outside the ion-content directive-->
+	<!-- <ion-tabs class="tabs-icon-top">
+			<a href="#/app/login"><ion-tab title = "Login" icon-on = "ion-ios-circle-filled" icon-off="ion-ios-circle-outline" class="tab-icon tab-center"></ion-tab></a>
+			<ion-tab title = "Signup"   icon-on = "ion-ios-circle-filled" icon-off="ion-ios-circle-outline" class="tab-icon tab-center"><a href="#/app/playlists"></a></ion-tab>
+			</ion-tabs> -->
+</ion-view>

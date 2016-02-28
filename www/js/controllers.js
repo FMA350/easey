@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('LoginCtrl', function($scope, $ionicModal, $timeout) {
+.controller('LoginCtrl', function($scope, $ionicModal, $timeout, $state) {
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -12,28 +12,16 @@ angular.module('starter.controllers', [])
   // Form data for the login modal
   $scope.loginData = {};
 
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
 
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
+	$scope.onSwipeRight = function() {
+		$state.go('signup');
+	}
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
     console.log('Doing login for', $scope.loginData.username);
 		// gather information on the localStorage and try to fetch data from the website
-		if(valid&&localLogin){
+		if(localLogin){
 			//TODO: grant access
 		}
 
@@ -54,20 +42,13 @@ angular.module('starter.controllers', [])
 		// TODO: connect to facebook apis
 		return false;
 	}
-
-
 })
 
-.controller('PlaylistsCtrl', function($scope) {
-  $scope.playlists = [
-    { title: 'Reggae', id: 1 },
-    { title: 'Chill', id: 2 },
-    { title: 'Dubstep', id: 3 },
-    { title: 'Indie', id: 4 },
-    { title: 'Rap', id: 5 },
-    { title: 'Cowbell', id: 6 }
-  ];
-})
+.controller('signupCtrl', function($scope, $ionicModal, $timeout, $state){
+	$scope.onSwipeLeft = function() {
+		$state.go('login');
+	}
 
-.controller('PlaylistCtrl', function($scope, $stateParams) {
+
+
 });
