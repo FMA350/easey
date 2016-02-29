@@ -1,13 +1,39 @@
 <ion-view name="signup">
-		<ion-header-bar>
-			<h1 class="title">Signup</h1>
+		<ion-header-bar class="bar-positive" align-title='center'>
+			<h1 class="title" >Signup</h1>
 		</ion-header-bar>
 		<ion-content class = "has-header" on-swipe-left="onSwipeLeft()">
+			<form name ="signupForm" ng-submit = "signup()" novalidate>
+				<div class="list">
+					<label class="item item-input item-floating-label"> Your Email Address
+						<span class="input-label"></span>
+						<input type="email" name="username" ng-model = "signupData.username" placeholder="john.doe@myemail.com" required>
+					</label>
+					<label class="item item-input item-floating-label"> Choose a password (4 chars minimum)
+						<span class="input-label"></span>
+						<input type="password" name="password"
+						ng-model ="signupData.password" placeholder="Password"
+						ng-minlength="4" required>
+					</label>
+					<label class="item item-input item-floating-label"> Confirm the password
+						<span class="input-label"></span>
+						<input type="password" name="passwordRepeat"ng-model="signupData.passwordRepeat"
+						placeholder="type the Password again" required>
+					</label>
+					<label class="item">
+						<ion-checkbox ng-model="signupData.isChecked">You read and aggreed the	<br> terms and conditions</ion-checkbox>
+					</label>
+				<label class="item">
+				<button class="button button-block button-positive" type="submit">Sign me up!</button>
+			</label>
+			</div>
+			</form>
+
 		</ion-content>
 		<ion-footer-bar>
 	<div class="icon-bar footer-bar">
-				<a href="/#/login">     <ion-icon class="button button-icon ion-ios-circle-filled"></ion-icon></a>
-				<a href="/#/signup"> <ion-icon class="button button-icon ion-ios-circle-outline"></ion-icon></a>
+				<a href="/#/signup"><ion-icon class="button button-icon ion-ios-circle-filled"></ion-icon></a>
+				<a href="/#/login"> <ion-icon class="button button-icon ion-ios-circle-outline"></ion-icon></a>
 	</div>
 		</ion-footer-bar>
 
