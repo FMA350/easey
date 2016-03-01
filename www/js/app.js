@@ -42,6 +42,11 @@ angular.module('starter', ['ionic','angular-md5', 'starter.controllers'])
 			url: '/signup',
 			templateUrl: 'templates/signup.html',
 			controller: 'signupCtrl'
+	})
+	.state('overview',{
+		url: '/overview',
+		templateUrl: 'templates/overview.html',
+		controller: 'overviewCtrl'
 	});
   // if none of the above states are matched, use this as the fallback
    $urlRouterProvider.otherwise('/login');

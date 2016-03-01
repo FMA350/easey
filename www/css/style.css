@@ -1,1 +1,28 @@
 /* Empty. Add your own CSS if you like */
+.float-add-event-button {
+
+background-color:#303f9f;
+opacity: 0.9;
+color: white;
+border-radius: 50%;
+/*border-radius:15% 0 0 0;*/
+width: 30px;
+padding: 25px;
+font-size: 40px;
+position: fixed;
+bottom: 5%; /* Adjust height */
+right: 5%; /* Adjust position */
+z-index: 1000;
+}
+
+
+.float-add-event-button .content {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  margin-top: -22px;
+  color: white;
+}
