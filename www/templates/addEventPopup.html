@@ -1,4 +1,41 @@
 <!-- template for adding an Event on the overview screen -->
 <div class="card">
-<input type="date"></input>
+	<div class="item item-divider">
+	Date of the Event
+</div>
+<label class = "item item-input">
+<input type="date" name = "date" ng-model="newDate"></input>
+</label>
+<div class="item item-divider">
+Hour
+</div>
+<label class="item item range range-positive">
+	<div class="item range range-positive">
+	<i class="icon ion-ios-sunny-outline"></i>
+	<input  type="range" name="newHour" min="1" max="12" value="{{newHour}}" step="1" ng-model="newHour" ng-init="newHour=12	">
+	<i class="ion-ios-moon-outline"></i>
+</div>
+</label>
+<div class="item item-divider">
+Hour: {{hour}}
+</div>
+<span> A.M. </span>
+<label class="toggle toggle-assertive">
+       <input type="checkbox">
+       <div class="track">
+         <div class="handle"></div>
+       </div>
+     </label>
+<span> P.M. </span>
+<label class="item item-input item-select" >
+    <div class="input-label">
+      Type:
+    </div>
+    <select ng-model ="newShareWith" name="shareWithSelect" ng-init="newShareWith ='choose'">
+			<option value="choose" disabled selected>Choose</option>
+      <option value="public">Public</option>
+      <option value="invite">Invite</option>
+      <option value="private">Private</option>
+    </select>
+  </label>
 </div>

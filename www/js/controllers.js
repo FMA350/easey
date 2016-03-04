@@ -125,7 +125,6 @@ angular.module('starter.controllers', [])
 		};
 
 		$scope.showAddEventPopup = function(){
-			console.log('Tapped!');
 			var newCalendarEvent = {}
 
 			var addEventPopup = $ionicPopup.show({
