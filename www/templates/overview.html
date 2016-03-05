@@ -5,18 +5,15 @@
 	<ion-content class="has-header">
 
 		<div class="list card">
-		<div class = "card" ng-model="calendarEvents" ng-repeat = "calendarEvent in calendarEvents | orderBy: 'date'">
-			<div>{{calendarEvent.date | date}}</div>
-			<div>{{calendarEvent.time}}</div>
-			<div>{{calendarEvent.location}}</div>
-			<div>{{calendarEvent.shareWith}}</div>
+		<div class = "card" ng-model="calendarEvents" ng-repeat = "calendarEvent in calendarEvents">
+			{{calendarEvent.name}}
 		</div>
 	</div>
 	</ion-content>
 	<div class="float-add-event-button" >
  <span class="height-fix">
     <a class="content">
-      <button class="ion-plus-round button button-icon icon button-positive" ng-click= "showAddEventPopup()"> </button>
+      <button class="ion-plus-round button button-icon icon button-positive" ng-click="showAddEventPopup()"> </button>
     </a>
    </span>
 </div>

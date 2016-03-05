@@ -94,50 +94,75 @@ angular.module('starter.controllers', [])
 	};
 })
 
-.controller('overviewCtrl', function($scope,$ionicPopup, $state){
+.controller('overviewCtrl', function($scope, $ionicPopup, $state){
 		var currentUser = localStorage.getItem("currentUser");
-
-//TODO: encrypt all the events.
- // 	var currentEvents = loadEvents();
-
-		var myEvents = [
-			{time:'1:30 P.M.', date: new Date('03/04/2016') , location:'Amsterdam', shareWith:'invite'},
-    {time:'8:30 A.M.', date: new Date('03/03/2016'), location:'New York', shareWith:'public'}
-
-  	];
-		localStorage[currentUser+"/Events"] = JSON.stringify(myEvents);
-
-			var calendarEvent =	{
-			// time,
-			// date,
-			// location,
-			// shareWith
-		};
-
+		$scope.calendarEvent = {};
 		$scope.calendarEvents = [];
 
+//TODO: encrypt all the events.
+
+
+
 		loadEvents = function(){
+			// console.log(JSON.parse(localStorage[currentUser+"/Events"]));
 			return localStorage[currentUser+"/Events"] ? JSON.parse(localStorage[currentUser+"/Events"]): [];
 		}
 
-		saveEvent = function($scope){
-
+		saveEvent = function(calendarEvent){
+			//TODO: do checks/postprocessing
+				calendarEvents = JSON.parse(localStorage.getItem(currentUser+"/Events"));
+    			if(calendarEvents === null) calendarEvents = new Array();
+					if(!angular.isArray(calendarEvents)) {
+						var old = calendarEvents;
+						calendarEvents = new Array();
+						calendarEvents[0] = old;
+					}
+				calendarEvents.push(calendarEvent);
+				console.log(calendarEvents);
+    		localStorage.setItem(currentUser+"/Events",JSON.stringify(calendarEvents));
 		};
 
 		$scope.showAddEventPopup = function(){
-			var newCalendarEvent = {}
-
 			var addEventPopup = $ionicPopup.show({
-				templateUrl: 'templates/addEventPopup.html',
+				templateUrl: 'templates/eventPopupOne.html',
 				title: 'Add an event',
-				scope: $scope
+				scope: $scope,
+				buttons: [
+					{text: 'Cancel',
+					 type: 'button-assertive button-clear'},
+					{text: 'Next',
+					 type: 'button-positive button-outline',
+				 	 onTap: function(e){
+						 var name = $scope.calendarEvent.name ? $scope.calendarEvent.name : "Untitled"
+						 var secondPopup = $ionicPopup.show({
+							 templateUrl: 'templates/eventPopupTwo.html',
+						 		title: name,
+								scope: $scope,
+								buttons: [
+									{text: 'Cancel',
+									type: 'button-assertive button-clear'},
+									{text: 'Save',
+									 type: 'button-positive button-outline',
+									 onTap: function(e){
+										 console.log($scope.calendarEvent);
+										 saveEvent($scope.calendarEvent);
+										 //clear the $scope.calendarEvent
+										 $scope.calendarEvent = {};
+										 //Reload events
+										 $scope.calendarEvents = loadEvents();
+									 }
+
+									 }
+								]
+						 });
+					 }
+				 }
+				]
 			});
 		};
-
-				console.log(window.localStorage.getItem("currentUser") || "not logged in");
-
+				//Execution on load.
 				$scope.calendarEvents = loadEvents();
-
+				console.log($scope.calendarEvents)
 				if($scope.calendarEvents.length === 0 ){
 					console.log("no events!")
 				};
