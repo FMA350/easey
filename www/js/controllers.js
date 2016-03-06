@@ -95,22 +95,58 @@ angular.module('starter.controllers', [])
 })
 
 .controller('overviewCtrl', function($scope, $ionicPopup, $state){
+// PAGE VARIABLES
+		$scope.binView = false;
+
+		$scope.toggleBinView = function(){
+			$scope.binView = !$scope.binView;
+		}
+
+// BACKEND VARAIBLES (TODO: Move in a service)
 		var currentUser = localStorage.getItem("currentUser");
 		$scope.calendarEvent = {};
 		$scope.calendarEvents = [];
 
 //TODO: encrypt all the events.
 
-
+		saveCalendarEvents = function(calendarEvents){
+			// Save current calendarEvents in the local storage
+				localStorage.setItem(currentUser+"/Events",JSON.stringify(calendarEvents));
+		}
 
 		loadEvents = function(){
 			// console.log(JSON.parse(localStorage[currentUser+"/Events"]));
-			return localStorage[currentUser+"/Events"] ? JSON.parse(localStorage[currentUser+"/Events"]): [];
+			return localStorage[currentUser+"/Events"] ? JSON.parse(localStorage[currentUser+"/Events"]) : [];
+		}
+
+		$scope.removeEvent = function(index){
+			console.log("removeEvent active");
+			if(($scope.calendarEvents.length	 > 0)&&($scope.calendarEvents.length > index)){
+				$scope.calendarEvents.splice(index, 1);
+				saveCalendarEvents($scope.calendarEvents);
+				return;
+			}
+			console.log("calendarEvents is empty or smaller than index. Function cannot remove element: "+index+", array length: "+$scope.calendarEvents.length		)
+		}
+
+		postprocessingEvent = function(calendarEvent){
+			// Adjust date
+			if(calendarEvent.meridian === null){
+				calendarEvent.meridian = false;
+			}
+			if(calendarEvent.meridian){
+				var newHour = Number(calendarEvent.hour) + 12;
+				calendarEvent.date.setHours(newHour);
+			}else{
+				calendarEvent.date.setHours(Number(calendarEvent.hour));
+			}
+			return calendarEvent;
 		}
 
 		saveEvent = function(calendarEvent){
+			calendarEvent = postprocessingEvent(calendarEvent);
 			//TODO: do checks/postprocessing
-				calendarEvents = JSON.parse(localStorage.getItem(currentUser+"/Events"));
+					var calendarEvents = loadEvents();
     			if(calendarEvents === null) calendarEvents = new Array();
 					if(!angular.isArray(calendarEvents)) {
 						var old = calendarEvents;
@@ -118,8 +154,9 @@ angular.module('starter.controllers', [])
 						calendarEvents[0] = old;
 					}
 				calendarEvents.push(calendarEvent);
-				console.log(calendarEvents);
-    		localStorage.setItem(currentUser+"/Events",JSON.stringify(calendarEvents));
+				console.log($scope.calendarEvents);
+				saveCalendarEvents(calendarEvents);
+				loadEvents();
 		};
 
 		$scope.showAddEventPopup = function(){
@@ -160,7 +197,9 @@ angular.module('starter.controllers', [])
 				]
 			});
 		};
-				//Execution on load.
+
+
+//Execution on load.
 				$scope.calendarEvents = loadEvents();
 				console.log($scope.calendarEvents)
 				if($scope.calendarEvents.length === 0 ){

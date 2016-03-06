@@ -1,15 +1,54 @@
 <ion-view name="overview">
-	<ion-header-bar align-title='center' class="bar-positive">
-		<h1 class="title">Overview</h1>
-	</ion-header-bar>
-	<ion-content class="has-header">
 
-		<div class="list card">
-		<div class = "card" ng-model="calendarEvents" ng-repeat = "calendarEvent in calendarEvents">
-			{{calendarEvent.name}}
+<ion-header-bar align-title='center' class=" item-bar bar-positive">
+		<h1 class="title">Overview</h1>
+		<a class="item-icon-right" href="#/overview" ng-model="binView" on-tap="toggleBinView()">
+			<i ng-class="{'button icon ion-ios-trash-outline icon-dark':!binView,'button icon ion-backspace-outline icon-dark':binView}">
+			</i>
+	</a>
+</ion-header-bar>
+<ion-header-bar class="bar-subheader">
+		<div class="button-bar">
+			<a class="button">Overview	</a>
+			<a class="button">Week</a>
+			<a class="button">Month</a>
+		</div>
+
+</ion-header-bar>
+
+<ion-content class="has-header">
+
+	<div class="list card">
+		<div class = "card" ng-model="calendarEvents" ng-repeat = "calendarEvent in calendarEvents| orderBy: 'date'">
+			<!--Card title is name of the event-->
+			<div class="item item-divider item-left">
+				{{calendarEvent.name}}
+				<a class="item-icon-right button" on-tap="removeEvent($index)" ng-show="binView">
+					<i class="icon button-icon ion-ios-trash" >
+					</i>
+			</a>
+			</div>
+
+			<!-- BODY OF THE CARD -->
+
+			<div class="item item-body"
+			<!-- TODO: change using only date (when finished preprocessing part)-->
+			{{calendarEvent.date|date}} at {{calendarEvent.date| date:'h a'}}
+			<!-- TODO: show map -->
+			<p>
+			<a class="item item-icon-right" href="#/overview">
+    	<i class="icon ion-ios-location"></i>
+			Location: "{{calendarEvent.location}}"
+  		</a>
+		</p>
+			Share status: {{calendarEvent.share}}
+		</div>
 		</div>
 	</div>
-	</ion-content>
+
+
+
+</ion-content>
 	<div class="float-add-event-button" >
  <span class="height-fix">
     <a class="content">
