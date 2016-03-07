@@ -7,6 +7,7 @@ angular.module('starter.controllers', [])
 //$scope.$on('$ionicView.enter', function(e) {
 //});
 
+
 .controller('LoginCtrl', function($scope, md5, $state) {
   // Form data for the login model
 	//TODO: move this to logout functionality
@@ -56,11 +57,29 @@ angular.module('starter.controllers', [])
 
 .controller('signupCtrl', function($scope, md5, $state){
 
+	//GLOBAL VARIABLES AND CONSTANTS
+	const PORT = 34237; //easey leet
+	const SERVER_ADDRESS ="localhost:"+PORT;
+
 	$scope.signupData = {
 		username: "",
 		password: "",
 		passwordRepeat: "",
 		isChecked: false
+	};
+
+	onlineSignup = function(){
+		var socket = io.connect(SERVER_ADDRESS);
+		socket.on('connect',function(){
+			console.log("connetion with the server...");
+			var toSend = {};
+				toSend.email = $scope.signupData.username;
+				toSend.username = $scope.signupData.username;
+				toSend.password = md5.createHash($scope.signupData.password);
+
+			socket.emit('signup',toSend);
+		})
+
 	};
 
 	$scope.onSwipeLeft = function() {
@@ -88,26 +107,30 @@ angular.module('starter.controllers', [])
 			}
 			console.log("all correct, saving...");
 			//TODO: Use a randomly generated salt every time!
+			window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
+			onlineSignup();
 
-					window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
 			console.log("signup process successful")
 	};
 })
 
 .controller('overviewCtrl', function($scope, $ionicPopup, $state){
-// PAGE VARIABLES
+	// PAGE VARIABLES
 		$scope.binView = false;
 
 		$scope.toggleBinView = function(){
 			$scope.binView = !$scope.binView;
 		}
 
-// BACKEND VARAIBLES (TODO: Move in a service)
+		// BACKEND VARAIBLES (TODO: Move in a service)
 		var currentUser = localStorage.getItem("currentUser");
 		$scope.calendarEvent = {};
 		$scope.calendarEvents = [];
+		//GLOBAL VARIABLES AND CONSTANTS
+		const PORT = 34237; //easey leet
+		const SERVER_ADDRESS ="localhost:"+PORT;
 
-//TODO: encrypt all the events.
+		//TODO: encrypt all the events.
 
 		saveCalendarEvents = function(calendarEvents){
 			// Save current calendarEvents in the local storage
@@ -121,7 +144,7 @@ angular.module('starter.controllers', [])
 
 		$scope.removeEvent = function(index){
 			console.log("removeEvent active");
-			if(($scope.calendarEvents.length	 > 0)&&($scope.calendarEvents.length > index)){
+			if(($scope.calendarEvents.length > 0)&&($scope.calendarEvents.length > index)){
 				$scope.calendarEvents.splice(index, 1);
 				saveCalendarEvents($scope.calendarEvents);
 				return;
@@ -143,12 +166,29 @@ angular.module('starter.controllers', [])
 			return calendarEvent;
 		}
 
+		serverSaveEvent = function(calendarEvent){
+			var socket = io.connect(SERVER_ADDRESS);
+			socket.on('connect',function(){
+				console.log("connetion with the server, saving calendarEvent...");
+				var toSend = {};
+					toSend.username = currentUser;
+					toSend.name = calendarEvent.name;
+					toSend.date = calendarEvent.date;
+					toSend.share = calendarEvent.share;
+					toSend.friends = null;
+					// TODO: add friends list
+
+				socket.emit('saveEvent',toSend);
+			})
+
+
+		}
+
 		saveEvent = function(calendarEvent){
 			calendarEvent = postprocessingEvent(calendarEvent);
-			//TODO: do checks/postprocessing
-					var calendarEvents = loadEvents();
-    			if(calendarEvents === null) calendarEvents = new Array();
-					if(!angular.isArray(calendarEvents)) {
+			var calendarEvents = loadEvents();
+    	if(calendarEvents === null) calendarEvents = new Array();
+			if(!angular.isArray(calendarEvents)) {
 						var old = calendarEvents;
 						calendarEvents = new Array();
 						calendarEvents[0] = old;
@@ -156,6 +196,7 @@ angular.module('starter.controllers', [])
 				calendarEvents.push(calendarEvent);
 				console.log($scope.calendarEvents);
 				saveCalendarEvents(calendarEvents);
+				serverSaveEvent(calendarEvent);
 				loadEvents();
 		};
 
@@ -199,7 +240,7 @@ angular.module('starter.controllers', [])
 		};
 
 
-//Execution on load.
+		//Execution on load.
 				$scope.calendarEvents = loadEvents();
 				console.log($scope.calendarEvents)
 				if($scope.calendarEvents.length === 0 ){
