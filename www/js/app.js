@@ -47,6 +47,11 @@ angular.module('starter', ['ionic','angular-md5', 'starter.controllers'])
 		url: '/overview',
 		templateUrl: 'templates/overview.html',
 		controller: 'overviewCtrl'
+	})
+	.state('dayView',{
+		url:'/dayView',
+		templateUrl: 'templates/dayView.html',
+		controller: 'dayViewCtrl'
 	});
   // if none of the above states are matched, use this as the fallback
    $urlRouterProvider.otherwise('/login');
