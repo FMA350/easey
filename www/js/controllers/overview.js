@@ -51,6 +51,8 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 			}else{
 				calendarEvent.date.setHours(Number(calendarEvent.hour));
 			}
+			calendarEvent.date.setMinutes(0);
+			calendarEvent.date.setSeconds(0);
 			return calendarEvent;
 		}
 

@@ -26,3 +26,22 @@ z-index: 1000;
   margin-top: -22px;
   color: white;
 }
+
+.float-event {
+	position: fixed;
+		z-index: 1000;
+}
+
+.col{
+
+}
+.timetable{
+	background: linear-gradient(to left,#6577FF,#FFA27F);
+	height:40px;
+}
+
+
+
+.newEventSlide{
+	background-color: #B2473F;
+}
