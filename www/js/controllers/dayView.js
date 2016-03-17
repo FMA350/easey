@@ -18,9 +18,11 @@ angular.module('starter').controller('dayViewCtrl', function($scope, md5, $state
 		for(var i = 0; i < 24; i++){
 			$scope.dayView.hourDates[i] = $scope.dayView.date;
 			$scope.dayView.hourDates[i] = $scope.dayView.hourDates[i].setHours(Number(i));
-
+			console.log($scope.dayView.hourDates[i]);
 		}
+		console.log($scope.dayView.hourDates[i]);
 		$scope.dayView.newEventDate = $scope.dayView.date;
+
 	}
 
 	loadEvents = function(){
@@ -31,21 +33,28 @@ angular.module('starter').controller('dayViewCtrl', function($scope, md5, $state
 		// TODO: Improve the way events are stored.
 		for(var i = 0; i < events.length; i++){
 			console.log(events[i]);
-			events[i].date = new Date();
-			 if(events[i].date.getFullYear === $scope.dayView.date.getFullYear){
+
+			events[i].date = new Date(events[i].date)
+			console.log(events[i].date);
+
+			$scope.dayView.date = new Date($scope.dayView.date);
+			console.log($scope.dayView.date);
+
+			 if(events[i].date.getFullYear() === $scope.dayView.date.getFullYear()){
 					console.log("YEAR OK");
-				if(events[i].date.month() === $scope.dayView.date.month()){
+				if(events[i].date.getMonth() === $scope.dayView.date.getMonth()){
 										console.log("month OK");
-					if(events[i].date.date() === $scope.dayView.date.date()){
+					if(events[i].date.getDate() === $scope.dayView.date.getDate()){
 						console.log("Displaying an element!");
-						var eventHour = events[i].date.hours();
-						var appentAt = document.getElementById('timetable');
-						appendAt.append("<p>Test</p>");
+						var eventHour = events[i].date.getHours();
+						var timetableElement = angular.element(document.getElementById('timetable'));
+						console.log(timetableElement);
+					  timetableElement.prepend("<p style=''>Test</p>");
 					}
 				}
-			// }
+		  }
 		}
-	}
+	};
 
 	$scope.gotoOverview = function(){
 		$state.go('overview');
@@ -77,14 +86,13 @@ angular.module('starter').controller('dayViewCtrl', function($scope, md5, $state
 
 	$scope.addEvent = function(inputDate){
 		console.log(inputDate);
-
-		$scope.dayView.messageHour = "Hour: "
+		$scope.dayView.messageHour = "Hour: ";
 		$scope.dayView.newEventDate = inputDate;
-	}
+	};
 
 // ON BOOTSTRAP
 setHourDates();
 events = loadEvents();
-displayEvents();
+// displayEvents();
 
 });

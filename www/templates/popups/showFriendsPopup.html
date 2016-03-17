@@ -1,0 +1,13 @@
+<div class="list">
+	<label class="item item-input">
+	<i class="icon ion-search placeholder-icon"></i>
+	<input type="text" placeholder="Search">
+</label>
+	<div class="item" ng-model = "friends" ng-repeat="friend in friends">
+		<a class="item item-avatar" href="#">
+			<img ng-src= "avatars/{{friend.email}}+.jpg">
+			<h2>{{friend.nickname}}</h2>
+			<p>{{friend.email}}</p>
+		</a>
+	</div>
+</div>

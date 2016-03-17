@@ -19,6 +19,19 @@
 <ion-content class="has-header">
 
 	<div class="list card">
+
+		<div class="card">
+			<div class="item item-divider item-left">
+				Friends
+			</div>
+			<div class="button-bar">
+			  <a class="button button-energized icon-left ion-person-add" on-tap = "addFriendPopup()">Add</a>
+			  <a class="button button-calm icon-left ion-ios-people" on-tap = "showFriendsPopup()"> Yours</a>
+			  <a class="button button-assertive icon-left ion-person-stalker">Free</a>
+			</div>
+	</div>
+
+
 		<div class = "card" ng-model="calendarEvents" ng-repeat = "calendarEvent in calendarEvents| orderBy: 'date'">
 			<!--Card title is name of the event-->
 			<div class="item item-divider item-left">
@@ -42,6 +55,7 @@
   		</a>
 		</p>
 			Share status: {{calendarEvent.share}}
+			<p ng-show ="calendarEvent.share === 'invite'">{{calendarEvent.friends}}</p>
 		</div>
 		</div>
 	</div>

@@ -13,9 +13,6 @@
 <label class = "item item-input">
 <input type="date" name = "date" ng-model="calendarEvent.date"></input>
 </label>
-<div class="item item-divider">
-Hour
-</div>
 <label class="item item range range-positive">
 	<div class="item range range-positive">
 	<i class="icon ion-ios-sunny-outline"></i>
@@ -45,4 +42,12 @@ Hour: {{calendarEvent.hour}}
       <option value="private">Private</option>
     </select>
   </label>
+
+	<label class="item item-input item-select" ng-show="calendarEvent.share === 'invite'">
+	    <ion-list  name="friendsPicker">
+				<ion-checkbox ng-model ="friend.choosen" ng-repeat="friend in friends track by $index" class="checkbox-balanced" >{{friend.nickname}}</ion-checkbox>
+				<!-- <div ng-show="!toBoolean(friends)">No friends to display!</div> -->
+				<!-- TODO: above does not work! -->
+	    </ion-list>
+	  </label>
 </div>
