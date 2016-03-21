@@ -21,6 +21,7 @@ angular.module('starter').controller('signupCtrl', function($scope, md5, $state)
 				toSend.password = md5.createHash($scope.signupData.password);
 
 			socket.emit('signup',toSend);
+			return;
 		})
 
 	};

@@ -12,7 +12,7 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 
 		//GLOBAL VARIABLES AND CONSTANTS
 		const PORT = 34237; //easey leet
-		const SERVER_ADDRESS ="localhost:"+PORT;
+		const SERVER_ADDRESS ="easey.noip.me:"+PORT;
 
 		//TODO: encrypt all the events.
 
@@ -77,9 +77,21 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 			return calendarEvent;
 		}
 
+		getPendingEvents = function(socket){
+			socket.on("pendingEvents", function(newEvents){
+				console.log(newEvents);
+				// socket.emit('pendingEventsSaved');
+				return newEvents;
+			});
+			socket.on('noEvents', function(){
+				console.log("nothing to synchronize");
+				return [];
+			});
+		};
+
+
 		serverSaveEvent = function(calendarEvent){
 			var socket = io.connect(SERVER_ADDRESS);
-			socket.on('connect',function(){
 				console.log("connetion with the server, saving calendarEvent...");
 				var toSend = {};
 					toSend.username = currentUser;
@@ -90,12 +102,16 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 						toSend.friends = calendarEvent.friends;
 					}
 					else{toSend.friends = null;}
-					// TODO: add friends list
 				socket.emit('saveEvent',toSend);
+				//receive events
+				saveEvents(getPendingEvents(socket));
+				return;
+		}
 
-			})
-
-
+		saveEvents = function(calendarEvents){
+			for(calendarEvent in calendarEvents){
+				saveEvent(calendarEvent);
+			}
 		}
 
 		saveEvent = function(calendarEvent){
