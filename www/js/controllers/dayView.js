@@ -29,6 +29,10 @@ angular.module('starter').controller('dayViewCtrl', function($scope, md5, $state
 		return localStorage[localStorage.getItem("currentUser")+"/Events"] ? JSON.parse(localStorage[localStorage.getItem("currentUser")+"/Events"]) : [];
 	};
 
+	removeDisplayedEvents = function(){
+			angular.element(document.getElementsByClassName("toBeRemoved")).remove();
+	}
+
 	displayEvents = function(){
 		// TODO: Improve the way events are stored.
 		for(var i = 0; i < events.length; i++){
@@ -47,9 +51,9 @@ angular.module('starter').controller('dayViewCtrl', function($scope, md5, $state
 					if(events[i].date.getDate() === $scope.dayView.date.getDate()){
 						console.log("Displaying an element!");
 						var eventHour = events[i].date.getHours();
-						var timetableElement = angular.element(document.getElementById('timetable'));
+						var timetableElement = angular.element(document.getElementById(eventHour));
 						console.log(timetableElement);
-					  timetableElement.prepend("<p style=''>Test</p>");
+					  timetableElement.append("<a class='toBeRemoved' style='button button-assertive'>"+events[i].name+" </a>");
 					}
 				}
 		  }
@@ -58,6 +62,10 @@ angular.module('starter').controller('dayViewCtrl', function($scope, md5, $state
 
 	$scope.gotoOverview = function(){
 		$state.go('overview');
+	};
+
+	$scope.gotoWeekView = function(){
+		$state.go('weekView');
 	};
 
 	$scope.showDatePicker = function(){
@@ -77,6 +85,8 @@ angular.module('starter').controller('dayViewCtrl', function($scope, md5, $state
 					 type: 'button-positive button-outline',
 					 onTap: function(e){
 						 setHourDates();
+						 events = loadEvents();
+						 removeDisplayedEvents();
 						 displayEvents();
 					 }
 				 }
@@ -93,6 +103,6 @@ angular.module('starter').controller('dayViewCtrl', function($scope, md5, $state
 // ON BOOTSTRAP
 setHourDates();
 events = loadEvents();
-// displayEvents();
+displayEvents();
 
 });

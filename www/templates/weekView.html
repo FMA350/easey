@@ -1,0 +1,45 @@
+<ion-view name="weekView">
+	<ion-header-bar align-title='center' ng-model="dayView" class=" item-bar bar-positive" scroll="false" >
+			<h1 class="title">{{weekView.today|date:'M/d'}} {{weekdays[weekView.today.getDay()]}}</h1>
+			<label class="item-icon-left" on-tap="changeDate()">
+				<i type="date" class="button icon ion-android-calendar icon-dark" on-tap="showDatePicker()">
+			</i>
+		</label>
+	</ion-header-bar>
+	<ion-header-bar class="bar-subheader" scroll="false">
+			<div class="button-bar">
+				<a class="button"on-tap="gotoOverview()">Overview	</a>
+				<a class="button" on-tap="gotoDayView()">Day View</a>
+				<a class="button">Week</a>
+			</div>
+	</ion-header-bar>
+
+	<ion-content class="has-header">
+	<div id="timetable" class="timetable" style="height: 50vh; !important;">
+		<ul class="list" ng-model="hourDates" style="height: 100%;">
+      <ion-scroll direction="y" style="height:100%;">
+			<li class="item item-divider" style="height:70px;">
+				<div class="row" style="height:60px;">
+				 <div class="col col-28"></div>
+				 <div class="col col-35 col-offset-6">A.M.</div>
+				 <div class="col col-35 col-offset-1">P.M.</div>
+				</div>
+			</li>
+				 <div class="row timetable" ng-repeat="weekday in weekdays track by $index" style="height:50px;">
+  				<div class="col col-28 button-dark button" >{{weekday}}</div>
+  				<div class="col col-35 col-offset-1 00 button-positive button" ng-attr-id="{{$index+'am'}}" on-tap="addEvent(hourDate);"></div>
+  				<div class="col col-35 col-offset-1 30 button-balanced button" ng-attr-id="{{$index+'pm'}}"on-tap="addEvent(hourDate+30*60*1000);"></div>
+				 </div>
+      </ion-scroll>
+    </ul>
+	</div>
+		<ion-slide-box style="max-height:45vh; height:50vh; !important;">
+			<ion-slide class="newEventSlide" style="height: 50vh;">
+				</div>
+			</ion-slide>
+		  <ion-slide style="background-image: url('/img/new-york-resturant.jpg');background-size:cover;); height: 50vh;">1</ion-slide>
+		  <ion-slide style="background-image: url('/img/roller-coaster.jpg');background-size:cover;); height: 50vh;">2</ion-slide>
+		</ion-slide-box>
+	</ion-content>
+
+</ion-view>

@@ -23,6 +23,9 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 		$scope.gotoDayView = function(){
 			$state.go('dayView');
 		}
+		$scope.gotoWeekView = function(){
+			$state.go('weekView');
+		};
 
 		saveCalendarEvents = function(calendarEvents){
 			// Save current calendarEvents in the local storage

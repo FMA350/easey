@@ -1,9 +1,8 @@
-angular.module('starter.client', [])
-.factory('socket'),function(socketFactory, md5){
+angular.module('starter').service('client',function(){
 	// CONSTANTS
 	const PORT = 34237; //easey leet
-	const SERVER_ADDRESS = "localhost:"+PORT;
-	var socket = {};
+	const SERVER_ADDRESS ="easey.noip.me:"+PORT;
+
 
 	this.signup = function(data){
 		socket = io.connect(SERVER_ADDRESS);
@@ -20,6 +19,7 @@ angular.module('starter.client', [])
 				return false;
 		})
 	};
+
 
 	this.login = function(username, password){
 		socket.connect(SERVER_ADDRESS);
@@ -51,14 +51,13 @@ angular.module('starter.client', [])
 		})
 	};
 
-
 	this.getEvents = function(username, password){
 		socket.connect(SERVER_ADDRESS);
-		socket.on('connect',function(){
+		socket.on('serverReady',function(){
 			console.log("connected, attemping to get events from the server");
 			var toSend = {};
-				toSend.username = username;
-				toSend.password = md5.createHash(password);
+			toSend.username = username;
+			toSend.password = md5.createHash(password);
 			socket.emit('getEvents',toSend);
 			socket.on('accepted', function(serverEvents){
 				console.log("Server returns events for user ")
@@ -66,9 +65,42 @@ angular.module('starter.client', [])
 			});
 			console.log("Server does not respond")
 			return null;
-
-		})
+		});
 	}
 
-	return socket;
-}
+	this.saveEvent = function(calendarEvent){
+		var socket = io.connect(SERVER_ADDRESS);
+		socket.on('serverReady',function(){
+			console.log("connetion with the server, saving calendarEvent...");
+			var toSend = {};
+			toSend.username = currentUser;
+			toSend.name = calendarEvent.name;
+			toSend.date = calendarEvent.date;
+			toSend.share = calendarEvent.share;
+			if(calendarEvent.share === 'invite'){
+					toSend.friends = calendarEvent.friends;
+				}
+			else{toSend.friends = null;}
+			socket.emit('saveEvent',toSend);
+			return;
+		});
+	}
+
+	this.getFriendEvents = function(username, friendUsername){
+		var socket = io.connect(SERVER_ADDRESS);
+		socket.on('serverReady', function(){
+			var toSend = {};
+			toSend.username = username;
+			toSend.friendUsername = friendUsername;
+			socket.emit('getFriendEvents', toSend);
+			socket.on('friendEvents', function(events){
+				return events;
+			});
+			socket.on('error', function(){
+				console.log('error receiveing friend events');
+				return [];
+			});
+		});
+	}
+
+});

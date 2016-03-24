@@ -10,7 +10,7 @@
 			<div class="button-bar">
 				<a class="button"on-tap="gotoOverview()">Overview	</a>
 				<a class="button">Day View</a>
-				<a class="button">Month</a>
+				<a class="button" on-tap="gotoWeekView()">Week</a>
 			</div>
 	</ion-header-bar>
 
@@ -28,14 +28,14 @@
 
 				 <div class="row timetable" ng-repeat="hourDate in dayView.hourDates track by $index">
   				<div class="col col-20">{{hourDate|date:'h a'}}</div>
-  				<div class="col col-35 col-offset-5 00" on-tap="addEvent(hourDate);"></div>
-  				<div class="col col-35 col-offset-5 30" on-tap="addEvent(hourDate+30*60*1000);"></div>
+  				<div class="col col-35 col-offset-5 00" ng-attr-id="{{$index}}" on-tap="addEvent(hourDate);"></div>
+  				<div class="col col-35 col-offset-5 30" ng-attr-id="{{$index+':30'}}"on-tap="addEvent(hourDate+30*60*1000);"></div>
 				 </div>
       </ion-scroll>
     </ul>
 	</div>
 		<ion-slide-box style="max-height:45vh; height:45vh; !important;">
-			<ion-slide class="newEventSlide" style="height: 45vh%;">
+			<ion-slide class="newEventSlide" style="height: 45vh;">
 				<!-- Add a new event slide -->
 				<div class="card">
 					<h3 class= "title" align="center" ng-model="dayView.header">{{dayView.newEventDate|date}}</h3>
