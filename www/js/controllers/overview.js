@@ -55,13 +55,10 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 		};
 
 		$scope.removeEvent = function(index){
-			console.log("removeEvent active");
-			if(($scope.calendarEvents.length > 0)&&($scope.calendarEvents.length > index)){
+			console.log("removeEvent function called, passed index: "+index );
 				$scope.calendarEvents.splice(index, 1);
 				saveCalendarEvents($scope.calendarEvents);
 				return;
-			}
-			console.log("calendarEvents is empty or smaller than index. Function cannot remove element: "+index+", array length: "+$scope.calendarEvents.length		)
 		}
 
 		postprocessingEvent = function(calendarEvent){

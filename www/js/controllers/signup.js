@@ -1,4 +1,4 @@
-angular.module('starter').controller('signupCtrl', function($scope, md5, $state){
+angular.module('starter').controller('signupCtrl', function($scope, md5, $state, client){
 
 	//GLOBAL VARIABLES AND CONSTANTS
 	const PORT = 34237; //easey leet
@@ -9,21 +9,6 @@ angular.module('starter').controller('signupCtrl', function($scope, md5, $state)
 		password: "",
 		passwordRepeat: "",
 		isChecked: false
-	};
-
-	onlineSignup = function(){
-		var socket = io.connect(SERVER_ADDRESS);
-		socket.on('connect',function(){
-			console.log("connetion with the server...");
-			var toSend = {};
-				toSend.email = $scope.signupData.username;
-				toSend.username = $scope.signupData.username;
-				toSend.password = md5.createHash($scope.signupData.password);
-
-			socket.emit('signup',toSend);
-			return;
-		})
-
 	};
 
 	$scope.turnTologin = function() {
@@ -49,11 +34,24 @@ angular.module('starter').controller('signupCtrl', function($scope, md5, $state)
 				console.log("size of the password too short");
 				return;
 			}
-			console.log("all correct, saving...");
-			//TODO: Use a randomly generated salt every time!
-			window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
-			onlineSignup();
-
-			console.log("signup process successful")
+		console.log("all correct locally, checking if email is present in the system...");
+		//TODO: Use a randomly generated salt every time!
+		if(client.isEmailUnique($scope.signupData.username)){
+			if(client.signup($scope.signupData)){
+				console.log('online signup successful, saving data on your phone...')
+				window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
+			}
+			else{
+				console.log('signup failed, retry later');
+				return;
+			}
+		}
+		else{
+			// TODO: print error, email was already used
+			console.log('email is already present');
+			return;
+		}
+			console.log("signup process successful");
+			return;
 	};
 })

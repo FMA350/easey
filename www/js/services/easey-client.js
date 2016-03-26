@@ -15,10 +15,27 @@ angular.module('starter').service('client',function(){
 			socket.emit('signup',toSend);
 			socket.on('accepted', function(){
 				return true;
-				})
+			});
+			socket.on('refused', function(){
 				return false;
-		})
+			});
+		});
 	};
+
+	this.isEmailUnique = function(email){
+		//contact the server and check if email is OK or if it has been already used
+		socket = io.connect(SERVER_ADDRESS);
+		socket.on('serverReady', function(){
+			console.log('connected to the server, checking if email is ok');
+			socket.emit('isEmailUnique', email);
+			socket.on('emailUnique', function(){
+				return true;
+			});
+			socket.on('emailIsPresent', function(){
+				return false;
+			});
+		})
+	}
 
 
 	this.login = function(username, password){
@@ -31,24 +48,11 @@ angular.module('starter').service('client',function(){
 				socket.emit('login', toSend);
 				socket.on('accepted',function(){
 						console.log("sign in accepted");
+						return true;
 				});
 				console.log("login failed");
 				return false;
 		});
-	};
-
-	this.saveEvent = function(event){
-		socket.connect(SERVER_ADDRESS);
-		socket.on('connect',function(){
-			console.log("connected, attemping to save an event on the server");
-			socket.emit('saveEvent',event);
-			socket.on('accepted', function(){
-				console.log("Event saved");
-				return true;
-			})
-			console.log("Event could not be saved");
-			return false;
-		})
 	};
 
 	this.getEvents = function(username, password){
