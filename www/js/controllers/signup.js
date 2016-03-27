@@ -1,8 +1,4 @@
-angular.module('starter').controller('signupCtrl', function($scope, md5, $state, client){
-
-	//GLOBAL VARIABLES AND CONSTANTS
-	const PORT = 34237; //easey leet
-	const SERVER_ADDRESS ="localhost:"+PORT;
+angular.module('starter').controller('signupCtrl', function($scope, md5, $state, client, $ionicPopup){
 
 	$scope.signupData = {
 		username: "",
@@ -11,15 +7,22 @@ angular.module('starter').controller('signupCtrl', function($scope, md5, $state,
 		isChecked: false
 	};
 
+	showAlert = function(message){
+		var alertPopup = $ionicPopup.alert({
+			title: 'Attention...',
+			template: message
+		});
+	}
+
 	$scope.turnTologin = function() {
 		$state.go('login');
 	}
 
 	$scope.signup = function() {
 		console.log("trying to sing up "+ $scope.signupData.username);
-		// TODO: check if username has already been used
 		if(!$scope.signupData.isChecked){
 			 console.log("signup failed, accept terms and conditions first!");
+			 showAlert('signup failed, accept terms and conditions first!');
 			 return;
 		 };
 
@@ -27,31 +30,43 @@ angular.module('starter').controller('signupCtrl', function($scope, md5, $state,
 
 		if($scope.signupData.password != $scope.signupData.passwordRepeat){
 			console.log("The two password do not match");
-					return;
+			showAlert('The two password do not match');
+			return;
 			};
 
 		if($scope.signupData.password.$error){
-				console.log("size of the password too short");
-				return;
-			}
+			console.log("size of the password too short");
+			showAlert('size of the password too short');
+			return;
+		};
+
 		console.log("all correct locally, checking if email is present in the system...");
 		//TODO: Use a randomly generated salt every time!
-		if(client.isEmailUnique($scope.signupData.username)){
-			if(client.signup($scope.signupData)){
-				console.log('online signup successful, saving data on your phone...')
-				window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
-			}
-			else{
-				console.log('signup failed, retry later');
-				return;
-			}
-		}
-		else{
-			// TODO: print error, email was already used
-			console.log('email is already present');
-			return;
-		}
-			console.log("signup process successful");
-			return;
+
+		var emailPromise =  client.isEmailUnique($scope.signupData.username)
+		console.log(emailPromise);
+			emailPromise
+				.then(
+					//success
+					function(){
+						//If the email is unique on the server, go on saving data.
+						if(client.signup($scope.signupData)){
+						console.log('online signup successful, saving data on your phone...');
+						window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
+						console.log("signup process successful");
+						return;
+					}
+					else{
+						console.log('signup failed, retry later');
+						return;
+					}
+				},
+				//in case of failure
+				function(){
+					console.log('email is already present');
+					showAlert('email is already present');
+					return;
+				}
+			);
 	};
 })

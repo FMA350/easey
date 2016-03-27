@@ -1,4 +1,4 @@
-angular.module('starter').service('client',function(){
+angular.module('starter').service('client',function($q, md5){
 	// CONSTANTS
 	const PORT = 34237; //easey leet
 	const SERVER_ADDRESS ="easey.noip.me:"+PORT;
@@ -24,17 +24,22 @@ angular.module('starter').service('client',function(){
 
 	this.isEmailUnique = function(email){
 		//contact the server and check if email is OK or if it has been already used
-		socket = io.connect(SERVER_ADDRESS);
-		socket.on('serverReady', function(){
-			console.log('connected to the server, checking if email is ok');
-			socket.emit('isEmailUnique', email);
-			socket.on('emailUnique', function(){
-				return true;
+		return $q(function(resolve, reject){
+			socket = io.connect(SERVER_ADDRESS);
+			socket.on('serverReady', function(){
+				console.log('connected to the server, checking if email is ok');
+				socket.emit('isEmailUnique', email);
+				socket.on('emailUnique', function(){
+					console.log('true');
+					resolve();
+					return true;
+				});
+				socket.on('emailIsPresent', function(){
+					console.log('false');
+					reject();
+				});
 			});
-			socket.on('emailIsPresent', function(){
-				return false;
-			});
-		})
+		});
 	}
 
 
@@ -47,8 +52,8 @@ angular.module('starter').service('client',function(){
 				toSend.password = md5.createHash(password);
 				socket.emit('login', toSend);
 				socket.on('accepted',function(){
-						console.log("sign in accepted");
-						return true;
+					console.log("sign in accepted");
+					return true;
 				});
 				console.log("login failed");
 				return false;
