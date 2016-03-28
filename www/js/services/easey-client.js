@@ -5,8 +5,8 @@ angular.module('starter').service('client',function($q, md5){
 
 
 	this.signup = function(data){
-		socket = io.connect(SERVER_ADDRESS);
-		socket.on('connect',function(){
+		var socket = io.connect(SERVER_ADDRESS);
+		socket.on('serverReady',function(){
 			console.log("connected with the server, signing up");
 			var toSend = {};
 				toSend.email = data.username;
@@ -42,21 +42,27 @@ angular.module('starter').service('client',function($q, md5){
 		});
 	}
 
-
 	this.login = function(username, password){
-		socket.connect(SERVER_ADDRESS);
-		socket.on('connect',function(){
-			console.log("connected to the server, loggin in");
-			var toSend = {};
-				toSend.username = username;
-				toSend.password = md5.createHash(password);
-				socket.emit('login', toSend);
-				socket.on('accepted',function(){
-					console.log("sign in accepted");
-					return true;
-				});
-				console.log("login failed");
-				return false;
+		//asynch
+		return $q(function(resolve, reject){
+			var socket = io.connect(SERVER_ADDRESS);
+			socket.on('serverReady',function(){
+				console.log("connected to the server, trying to log in");
+				var toSend = {};
+					toSend.username = username;
+					toSend.password = md5.createHash(password);
+					socket.emit('login', toSend);
+					socket.on('success',function(){
+						console.log("sign in accepted");
+						resolve();
+					});
+					socket.on('refused', function(reason){
+						console.log("login failed");
+						console.log(reason);
+						reject(reason);
+					});
+		});
+
 		});
 	};
 

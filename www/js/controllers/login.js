@@ -1,4 +1,4 @@
-angular.module('starter').controller('LoginCtrl', function($scope, md5, $state, $ionicPopup) {
+angular.module('starter').controller('LoginCtrl', function($scope, md5, $state, $ionicPopup, client) {
   // Form data for the login model
 	//TODO: move this to logout functionality
 	window.localStorage.setItem("currentUser", "")
@@ -15,20 +15,26 @@ angular.module('starter').controller('LoginCtrl', function($scope, md5, $state, 
 		if(localLogin($scope.loginData.username, $scope.loginData.password)){
 			console.log("login successful!")
 			$state.go('overview');
-			return true;
 		}else{
-		   if(remoteLogin($scope.loginData.username, $scope.loginData.password)){
-			console.log("login successful!")
-			$state.go('overview');
-			return true;
+			var loginPromise = client.login($scope.loginData.username, $scope.loginData.password);
+			console.log(loginPromise);
+			loginPromise
+				.then(
+					//success
+					function(){
+						console.log('login successful');
+						$state.go('overview');
+					},
+					//failure
+					function(){
+						console.log('login failed, server says wrong password');
+						var alertPopup = $ionicPopup.alert({
+								title: 'Login failed',
+								template: 'Could not login in Easey, are you sure you have an account?'
+								});
+					}
+				);
 			}
-			console.log("could not login");
-				var alertPopup = $ionicPopup.alert({
-						title: 'Login failed',
-						template: 'Could not login in Easey, are you sure you have an account?'
-						});
-			return false;
-		}
 	};
 
 	localLogin = function(usernameL, passwordL){
@@ -42,9 +48,6 @@ angular.module('starter').controller('LoginCtrl', function($scope, md5, $state, 
 			return false;
 	};
 
-	remoteLogin = function(usernameL, passwordL){
-		return false;
-	}
 	FacebookLogin = function(){
 		// TODO: check for a tocken on the phone first
 		// TODO: connect to facebook apis

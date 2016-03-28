@@ -14,11 +14,11 @@ angular.module('starter').controller('signupCtrl', function($scope, md5, $state,
 		});
 	}
 
-	$scope.turnTologin = function() {
+	$scope.turnTologin = function(){
 		$state.go('login');
 	}
 
-	$scope.signup = function() {
+	$scope.signup = function(){
 		console.log("trying to sing up "+ $scope.signupData.username);
 		if(!$scope.signupData.isChecked){
 			 console.log("signup failed, accept terms and conditions first!");
@@ -51,22 +51,22 @@ angular.module('starter').controller('signupCtrl', function($scope, md5, $state,
 					function(){
 						//If the email is unique on the server, go on saving data.
 						if(client.signup($scope.signupData)){
-						console.log('online signup successful, saving data on your phone...');
-						window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
-						console.log("signup process successful");
+							console.log('online signup successful, saving data on your phone...');
+							window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
+							console.log("signup process successful");
+							return;
+						}
+						else{
+							console.log('signup failed, retry later');
+							return;
+						}
+					},
+					//failure
+					function(){
+						console.log('email is already present');
+						showAlert('email is already present');
 						return;
 					}
-					else{
-						console.log('signup failed, retry later');
-						return;
-					}
-				},
-				//in case of failure
-				function(){
-					console.log('email is already present');
-					showAlert('email is already present');
-					return;
-				}
-			);
-	};
+				);
+		};
 })
