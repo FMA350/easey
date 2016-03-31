@@ -1,8 +1,7 @@
-angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopup, $state){
+angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopup, $state, client, storage){
 	// PAGE VARIABLES
 		$scope.binView = false;
 
-		// BACKEND VARAIBLES (TODO: Move in a service)
 		var currentUser = localStorage.getItem("currentUser");
 		$scope.calendarEvent = {};
 		$scope.friends = [];
@@ -27,23 +26,9 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 			$state.go('weekView');
 		};
 
-		saveCalendarEvents = function(calendarEvents){
-			// Save current calendarEvents in the local storage
-				localStorage.setItem(currentUser+"/Events",JSON.stringify(calendarEvents));
-		};
-
-		saveFriendsList = function(friends){
-			localStorage.setItem(currentUser+"/Friends",JSON.stringify(friends));
-		}
-
-		loadEvents = function(){
-			// console.log(JSON.parse(localStorage[currentUser+"/Events"]));
-			return localStorage[currentUser+"/Events"] ? JSON.parse(localStorage[currentUser+"/Events"]) : [];
-		};
-
 		loadFriends = function(){
-			var temp = localStorage[currentUser+"/Friends"] ? JSON.parse(localStorage[currentUser+"/Friends"]) : [];
-			console.log(temp);
+			//get friends and process them to fit the view
+			temp = storage.getFriends();
 			var toReturn = new Array(temp.length);
 			for (var index = 0; index < temp.length; index++){
 				toReturn[index] = {};
@@ -57,94 +42,41 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 		$scope.removeEvent = function(index){
 			console.log("removeEvent function called, passed index: "+index );
 				$scope.calendarEvents.splice(index, 1);
-				saveCalendarEvents($scope.calendarEvents);
+				storage.saveEvents($scope.calendarEvents);
 				return;
 		}
+		//
+		// getPendingEvents = function(socket){
+		// 	socket.on("pendingEvents", function(newEvents){
+		// 		console.log(newEvents);
+		// 		// socket.emit('pendingEventsSaved');
+		// 		return newEvents;
+		// 	});
+		//
+		// 	socket.on('noEvents', function(){
+		// 		console.log("nothing to synchronize");
+		// 		return [];
+		// 	});
+		// };
+		//
+		// saveEvents = function(calendarEvents){
+		// 	for(calendarEvent in calendarEvents){
+		// 		saveEvent(calendarEvent);
+		// 	}
+		// }
+		//
+		// saveEvent = function(calendarEvent){
+		// 	calendarEvent = postprocessingEvent(calendarEvent);
+		//
+		// 	var calendarEvents = storage.getEvents();
+		// 	console.log(calendarEvents);
+		// 	storage.addToArray(calendarEvent, calendarEvents, function(newArray){
+		// 		 storage.orderLastEvent(newArray, function(ordered){
+		// 			 storage.saveEvents(ordered);
+		// 		 });
+		// 	});
+		// };
 
-		postprocessingEvent = function(calendarEvent){
-			// Adjust date
-			if(calendarEvent.meridian === null){
-				calendarEvent.meridian = false;
-			}
-			if(calendarEvent.meridian){
-				var newHour = Number(calendarEvent.hour) + 12;
-				calendarEvent.date.setHours(newHour);
-			}else{
-				calendarEvent.date.setHours(Number(calendarEvent.hour));
-			}
-			calendarEvent.date.setMinutes(0);
-			calendarEvent.date.setSeconds(0);
-			return calendarEvent;
-		}
-
-		getPendingEvents = function(socket){
-			socket.on("pendingEvents", function(newEvents){
-				console.log(newEvents);
-				// socket.emit('pendingEventsSaved');
-				return newEvents;
-			});
-			socket.on('noEvents', function(){
-				console.log("nothing to synchronize");
-				return [];
-			});
-		};
-
-
-		serverSaveEvent = function(calendarEvent){
-			var socket = io.connect(SERVER_ADDRESS);
-				console.log("connetion with the server, saving calendarEvent...");
-				var toSend = {};
-					toSend.username = currentUser;
-					toSend.name = calendarEvent.name;
-					toSend.date = calendarEvent.date;
-					toSend.share = calendarEvent.share;
-					if(calendarEvent.share === 'invite'){
-						toSend.friends = calendarEvent.friends;
-					}
-					else{toSend.friends = null;}
-				socket.emit('saveEvent',toSend);
-				//receive events
-				saveEvents(getPendingEvents(socket));
-				return;
-		}
-
-		saveEvents = function(calendarEvents){
-			for(calendarEvent in calendarEvents){
-				saveEvent(calendarEvent);
-			}
-		}
-
-		saveEvent = function(calendarEvent){
-			calendarEvent = postprocessingEvent(calendarEvent);
-			var calendarEvents = loadEvents();
-    	if(calendarEvents === null) calendarEvents = new Array();
-			if(!angular.isArray(calendarEvents)) {
-						var old = calendarEvents;
-						calendarEvents = new Array();
-						calendarEvents[0] = old;
-					}
-				calendarEvents.push(calendarEvent);
-				console.log($scope.calendarEvents);
-				saveCalendarEvents(calendarEvents);
-				serverSaveEvent(calendarEvent);
-				loadEvents();
-		};
-
-		saveNewContact = function(nickname, email){
-			console.log(nickname + email);
-			if($scope.friends === null) $scope.friends = new Array();
-			if(!angular.isArray($scope.friends)) {
-						var old = $scope.friends;
-						$scope.friends = new Array();
-						$scope.friends[0] = old;
-					}
-			toAdd = {};
-			toAdd.nickname = nickname;
-			toAdd.email		 = email;
-		 	$scope.friends.push(toAdd);
-			console.log("friends list: "+$scope.friends)
-			saveFriendsList($scope.friends);
-		}
 
 		saveEventFriends = function(){
 			console.log($scope.friends);
@@ -186,13 +118,12 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 									 type: 'button-positive button-outline',
 									 onTap: function(e){
 										 console.log($scope.calendarEvent);
-										 saveEvent($scope.calendarEvent);
+										 storage.saveEvent($scope.calendarEvent);
 										 //clear the $scope.calendarEvent
 										 $scope.calendarEvent = {};
 										 //Reload events
-										 $scope.calendarEvents = loadEvents();
+										 $scope.calendarEvents = storage.getEvents();
 									 }
-
 									 }
 								]
 						 });
@@ -213,7 +144,7 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 					{text: 'Save',
 						type: 'button-positive button-outline',
 						onTap: function(e){
-							saveNewContact($scope.newFriend.nickname, $scope.newFriend.email);
+							storage.addContact($scope.newFriend.nickname, $scope.newFriend.email);
 							$scope.newFriend = {};
 						}
 					 }
@@ -234,11 +165,6 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 		};
 
 		//Execution on load.
-				$scope.calendarEvents = loadEvents();
+				$scope.calendarEvents = storage.getEvents();
 				$scope.friends = loadFriends();
-				console.log($scope.friends)
-				if($scope.calendarEvents.length === 0 ){
-					console.log("no events!")
-				};
-
 });

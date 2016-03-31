@@ -22,7 +22,9 @@ angular.module('starter').controller('LoginCtrl', function($scope, md5, $state, 
 				.then(
 					//success
 					function(){
-						console.log('login successful');
+						console.log('login successful, adding local values');
+						window.localStorage.setItem($scope.loginData.username, md5.createHash($scope.loginData.password));
+						window.localStorage.setItem("currentUser", $scope.loginData.username);
 						$state.go('overview');
 					},
 					//failure

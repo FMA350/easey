@@ -50,16 +50,18 @@ angular.module('starter').controller('signupCtrl', function($scope, md5, $state,
 					//success
 					function(){
 						//If the email is unique on the server, go on saving data.
-						if(client.signup($scope.signupData)){
-							console.log('online signup successful, saving data on your phone...');
-							window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
-							console.log("signup process successful");
-							return;
-						}
-						else{
-							console.log('signup failed, retry later');
-							return;
-						}
+						client.signup($scope.signupData, function(response){
+							if(response){
+								console.log('online signup successful, saving data on your phone...');
+								window.localStorage.setItem($scope.signupData.username, md5.createHash($scope.signupData.password));
+								console.log("signup process successful");
+								return;
+							}
+							else{
+								console.log('signup failed, retry later');
+								return;
+							}
+						});
 					},
 					//failure
 					function(){

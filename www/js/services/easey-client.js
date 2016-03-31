@@ -4,7 +4,7 @@ angular.module('starter').service('client',function($q, md5){
 	const SERVER_ADDRESS ="easey.noip.me:"+PORT;
 
 
-	this.signup = function(data){
+	this.signup = function(data, callback){
 		var socket = io.connect(SERVER_ADDRESS);
 		socket.on('serverReady',function(){
 			console.log("connected with the server, signing up");
@@ -14,10 +14,10 @@ angular.module('starter').service('client',function($q, md5){
 				toSend.password = md5.createHash(data.password);
 			socket.emit('signup',toSend);
 			socket.on('accepted', function(){
-				return true;
+				callback(true);
 			});
 			socket.on('refused', function(){
-				return false;
+				callback(false);
 			});
 		});
 	};
@@ -88,16 +88,23 @@ angular.module('starter').service('client',function($q, md5){
 		socket.on('serverReady',function(){
 			console.log("connetion with the server, saving calendarEvent...");
 			var toSend = {};
-			toSend.username = currentUser;
+			toSend.username = localStorage.getItem("currentUser");
 			toSend.name = calendarEvent.name;
 			toSend.date = calendarEvent.date;
 			toSend.share = calendarEvent.share;
 			if(calendarEvent.share === 'invite'){
 					toSend.friends = calendarEvent.friends;
 				}
-			else{toSend.friends = null;}
+			else{toSend.friends = [];}
 			socket.emit('saveEvent',toSend);
-			return;
+			socket.on('success', function(){
+				console.log('event saved successfully on the server')
+				return;
+			});
+			socket.on('error', function(reason){
+				console.log('An error occured, server answered with: '+ reason);
+				return;
+			})
 		});
 	}
 
