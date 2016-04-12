@@ -18,7 +18,6 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 		$scope.toggleBinView = function(){
 			$scope.binView = !$scope.binView;
 		}
-
 		$scope.gotoDayView = function(){
 			$state.go('dayView');
 		}
@@ -28,57 +27,73 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 
 		loadFriends = function(){
 			//get friends and process them to fit the view
-			temp = storage.getFriends();
+			var temp = storage.getFriends();
+			console.log(temp);
 			var toReturn = new Array(temp.length);
 			for (var index = 0; index < temp.length; index++){
 				toReturn[index] = {};
-				toReturn[index].email = temp[index].email;
-				toReturn[index].nickname = temp[index].nickname;
+				// toReturn[index].email = temp[index].email;
+				// toReturn[index].nickname = temp[index].nickname;
+				 toReturn[index].email = temp[index];
+				 toReturn[index].nickname = temp[index];
 				toReturn[index].choosen = false;
 			}
+			console.log(toReturn);
 			return toReturn;
 		};
 
+		$scope.accept = function(index){
+			storage.saveFriend($scope.requests[index], $scope.requests[index]);
+			console.log('request= '+ $scope.requests[index])
+			client.answerFriendRequest($scope.requests[index], currentUser, true, function(answer){
+					console.log(answer);
+					$scope.requests.splice(index, 1);
+					$state.go($state.current, {}, {reload: true});
+					return;
+			});
+		}
+
+		$scope.refuse = function(index){
+			client.answerFriendRequest($scope.requests[index], currentUser, false, function(answer){
+				$scope.requests.splice(index, 1);
+				$state.go($state.current, {}, {reload: true});
+				console.log(answer);
+				return;
+			});
+		}
+
 		$scope.removeEvent = function(index){
-			console.log("removeEvent function called, passed index: "+index );
-				$scope.calendarEvents.splice(index, 1);
-				storage.saveEvents($scope.calendarEvents);
+				storage.removeEvent(index);
+				$scope.calendarEvents = storage.getEvents();
 				return;
 		}
-		//
-		// getPendingEvents = function(socket){
-		// 	socket.on("pendingEvents", function(newEvents){
-		// 		console.log(newEvents);
-		// 		// socket.emit('pendingEventsSaved');
-		// 		return newEvents;
-		// 	});
-		//
-		// 	socket.on('noEvents', function(){
-		// 		console.log("nothing to synchronize");
-		// 		return [];
-		// 	});
-		// };
-		//
-		// saveEvents = function(calendarEvents){
-		// 	for(calendarEvent in calendarEvents){
-		// 		saveEvent(calendarEvent);
-		// 	}
-		// }
-		//
-		// saveEvent = function(calendarEvent){
-		// 	calendarEvent = postprocessingEvent(calendarEvent);
-		//
-		// 	var calendarEvents = storage.getEvents();
-		// 	console.log(calendarEvents);
-		// 	storage.addToArray(calendarEvent, calendarEvents, function(newArray){
-		// 		 storage.orderLastEvent(newArray, function(ordered){
-		// 			 storage.saveEvents(ordered);
-		// 		 });
-		// 	});
-		// };
 
+		$scope.pendingEventAccept = function(index, accept){
+			if(accept){
+				//accept the event, move it to local storage, add it to normal events and delete it on the server
+				var newEvent = {};
+				console.log($scope.pendingEvents[index].friends);
+				console.log($scope.pendingEvents[index].location);
+				newEvent.name 	 = 	$scope.pendingEvents[index].name;
+				newEvent.date    = 	$scope.pendingEvents[index].date;
+				newEvent.share   = 	$scope.pendingEvents[index].share;
+				newEvent.friends = 	$scope.pendingEvents[index].friends;
+				newEvent.location = $scope.pendingEvents[index].location;
+				console.log(newEvent);
+				storage.saveEvent(newEvent);
+				client.saveEvent(newEvent);
+				client.deletePendingEvent(currentUser, $scope.pendingEvents[index]);
+				$scope.pendingEvents.splice(index, 1);
+			}
+			else{
+				//delete event from pending
+				client.deletePendingEvent(currentUser, $scope.pendingEvents[index]);
+				$scope.pendingEvents.splice(index, 1);
+				console.log('pending event deleted!')
+			}
+		}
 
-		saveEventFriends = function(){
+		pickFriends = function(){
 			console.log($scope.friends);
 			var friends = [];
 			for(var i = 0; i < $scope.friends.length; i++){
@@ -104,7 +119,7 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 					{text: 'Next',
 					 type: 'button-positive button-outline',
 				 	 onTap: function(e){
-						 $scope.calendarEvent.friends = saveEventFriends();
+						 $scope.calendarEvent.friends = pickFriends();
 						 console.log($scope.calendarEvent.friends);
 						 var name = $scope.calendarEvent.name ? $scope.calendarEvent.name : "Untitled"
 						 var secondPopup = $ionicPopup.show({
@@ -118,7 +133,8 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 									 type: 'button-positive button-outline',
 									 onTap: function(e){
 										 console.log($scope.calendarEvent);
-										 storage.saveEvent($scope.calendarEvent);
+										 storage.saveEvent(storage.postprocessingEvent($scope.calendarEvent));
+										 client.saveEvent($scope.calendarEvent);
 										 //clear the $scope.calendarEvent
 										 $scope.calendarEvent = {};
 										 //Reload events
@@ -144,7 +160,9 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 					{text: 'Save',
 						type: 'button-positive button-outline',
 						onTap: function(e){
-							storage.addContact($scope.newFriend.nickname, $scope.newFriend.email);
+							client.sendFriendRequest(currentUser ,$scope.newFriend.email, $scope.newFriend.message, function(response){
+								console.log(response);
+							});
 							$scope.newFriend = {};
 						}
 					 }
@@ -166,5 +184,16 @@ angular.module('starter').controller('overviewCtrl', function($scope, $ionicPopu
 
 		//Execution on load.
 				$scope.calendarEvents = storage.getEvents();
-				$scope.friends = loadFriends();
+				client.getPendingEvents(currentUser, function(data){
+					$scope.pendingEvents = data;
+				})
+				client.getFriends(currentUser, function(data){
+					storage.saveFriends(data);
+					$scope.friends = loadFriends();
+				})
+				client.getFriendRequests( localStorage.getItem('currentUser'), function(requests){
+					$scope.requests = requests;
+					console.log(requests);
+				});
+
 });

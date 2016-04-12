@@ -2,13 +2,14 @@
 <widget id="com.ionicframework.easey547523" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>Easey</name>
   <description>
-        An Ionic Framework and Cordova project.
+        Easey App
     </description>
-  <author email="you@example.com" href="http://example.com.com/">
-      Your Name Here
+  <author email="francesco.moneta@gmail.com" href="">
+      Francesco Maria Moneta
     </author>
   <content src="index.html"/>
   <access origin="*"/>
+  <allow-navigation href="*"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
   <preference name="DisallowOverscroll" value="true"/>

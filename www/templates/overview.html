@@ -30,10 +30,40 @@
 			  <a class="button button-assertive icon-left ion-person-stalker">Free</a>
 			</div>
 	</div>
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~FRIENDS -->
+	<div class="card" ng-show = "requests.length > 0" ng-repeat = 'request in requests'>
+		<div class = " bar bar-energized item item-divider">
+			<div class="title">Friend Request: {{request}}</div>
+			</div>
+			<div class = "button-bar item button-assertive">
+				<a class=" button button-balanced" on-tap ='accept($index)'><i class ="ion-checkmark icon"></i> Accept</a>
+				<a class=" button button-assertive" on-tap = 'refuse($index)'><i class="icon ion-close"></i> Decline</a>
+			</div>
+	</div>
+
+	<div class="card" ng-show = "pendingEvents.length > 0" ng-repeat = 'pendingEvent in pendingEvents'>
+		<div class = " bar bar-calm item item-divider">
+			<div class="title">Pending: {{pendingEvent.name}}</div>
+				<button class="item button button-icon ion-checkmark" on-tap ='pendingEventAccept($index, true)'></button>
+				<button class="item button button-icon ion-close" on-tap = 'pendingEventAccept($index, false)'></button>
+			</div>
+	<div class="item item-body">
+			{{pendingEvent.date|date}} at {{pendingEvent.date| date:'h a'}}
+			<p>
+			<a class="item item-icon-right" href="#/overview">
+			<i class="icon ion-ios-location"></i>
+			where:
+			<!-- TODO: TO add ASAP! -->
+			<!-- Location: "{{pendingEvent.location}}" -->
+			</a>
+		</p>
+			<p>Invited by: <h3 class='subtitle'>{{pendingEvent.friends}}</h3></p>
+	</div>
+	</div>
 
 		<div class = "card" ng-model="calendarEvents" ng-repeat = "calendarEvent in calendarEvents| orderBy: 'date'">
 			<!--Card title is name of the event-->
-			<div class="item item-divider item-left">
+			<div class="item item-divider item-left title">
 				{{calendarEvent.name}}
 				<a class="item-icon-right button" on-tap="removeEvent($index)" ng-show="binView">
 					<i class="icon button-icon ion-ios-trash" >
@@ -54,7 +84,7 @@
   		</a>
 		</p>
 			Share status: {{calendarEvent.share}}
-			<p ng-show ="calendarEvent.share === 'invite'">{{calendarEvent.friends}}</p>
+			<p ng-show ="(calendarEvent.share === 'invite')||(calendarEvent.share === 'invited')">{{calendarEvent.friends}}</p>
 		</div>
 		</div>
 	</div>

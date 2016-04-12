@@ -9,11 +9,11 @@ angular.module('starter').service('storage',function(){
 		localStorage.setItem(localStorage.getItem("currentUser")+FRIENDS_REQUESTS ,JSON.stringify(requests));
 	}
 
-	getFriendRequests = function(){
+ 	this.getFriendRequests = function(){
 		return localStorage.getItem(localStorage.getItem("currentUser")+ FRIENDS_REQUESTS) ? JSON.parse(localStorage.getItem(localStorage.getItem("currentUser")+ FRIENDS_REQUESTS)) : [];
 	}
 
-	postprocessingEvent = function(calendarEvent){
+	this.postprocessingEvent = function(calendarEvent){
 		var toReturn = {}
 		// Adjust date
 		if(calendarEvent.meridian === null){
@@ -36,16 +36,12 @@ angular.module('starter').service('storage',function(){
 		return toReturn;
 	}
 
-	this.orderLastEvent = function(events, callback){
+	orderLastEvent = function(events, callback){
 		//insertion sort on the last event (pushed into the array)
 		if(events.length >= 2){
 			var toSortIndex = (events.length) -1;
 			var index = (events.length) -2;
 			var temp = {};
-			console.log('toSortIndex: '+ toSortIndex);
-			console.log(events.length);
-			console.log(events[index].date);
-			console.log(events[toSortIndex].date);
 			while(index >= 0){
 				if(events[index].date > events[toSortIndex].date){
 					temp = events[index];
@@ -82,29 +78,9 @@ angular.module('starter').service('storage',function(){
 		callback(array);
 	}
 
-	this.saveEvents = function(events){
+	saveEvents = function(events){
 		console.log('saveEvents: '+events);
 	  localStorage.setItem(localStorage.getItem("currentUser")+"/Events",JSON.stringify(events));
-	}
-
-	this.saveEvent = function(event){
-		event = postprocessingEvent(calendarEvent);
-		var calendarEvents = getEvents();
-		console.log(calendarEvents);
-		addToArray(calendarEvent, calendarEvents, function(newArray){
-			 orderLastEvent(newArray, function(ordered){
-				 saveEvents(ordered);
-			 });
-		});
-	}
-
-	this.addContact = function(nickname, email){
-		contact.nickname = nickname;
-		contact.email		 = email;
-		var friendRequests = getFriendRequests();
-		addToArray(contact,friendRequests, function(newArray){
-			saveFriendRequests(newArray);
-		});
 	}
 
 	this.getEvents = function(){
@@ -112,10 +88,43 @@ angular.module('starter').service('storage',function(){
 	}
 
 	this.saveFriends = function(friends){
-		localStorage.setItem(localStorage.getItem("currentUser")+"/Friends",JSON.stringify(friends));
+		localStorage.setItem(localStorage.getItem("currentUser")+FRIENDS, JSON.stringify(friends));
 	}
 
 	this.getFriends = function(){
-		return localStorage.getItem(localStorage.getItem("currentUser")+"/Friends") ? JSON.parse(localStorage.getItem(localStorage.getItem("currentUser")+"/Friends")) : [];
+		 return localStorage.getItem(localStorage.getItem("currentUser")+FRIENDS) ? JSON.parse(localStorage.getItem(localStorage.getItem("currentUser")+FRIENDS)) : [];
+		//  var temp = localStorage.getItem(localStorage.getItem("currentUser")+ FRIENDS);
+		//  if(temp.isObject) return JSON.parse(temp);
+		//  else return [];
+		//  		//return [];
+	}
+
+	this.saveEvent = function(event){
+		//event = this.postprocessingEvent(event);
+		console.log(event);
+		var events = this.getEvents();
+		this.addToArray(event, events, function(newArray){
+			console.log(newArray);
+			 orderLastEvent(newArray, function(ordered){
+				 saveEvents(ordered);
+			 });
+		});
+	}
+
+	this.saveFriend = function(nickname, email){
+		var contact = {};
+		contact.nickname = nickname;
+		contact.email		 = email;
+		var friends = this.getFriends();
+		console.log(friends);
+		this.addToArray(contact, friends, function(newArray){
+			saveFriendRequests(newArray);
+		});
+	}
+
+	this.removeEvent = function(index){
+		var events = this.getEvents();
+		events.splice(index, 1);
+		saveEvents(events);
 	}
 });
