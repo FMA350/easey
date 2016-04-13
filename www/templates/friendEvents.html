@@ -1,0 +1,49 @@
+<ion-view name="overview">
+
+<ion-header-bar align-title='center' class=" item-bar bar-positive">
+		<h1 class="title">{{friend.name}} events</h1>
+		<a class="item-icon-right" href="#/overview" ng-model="binView" on-tap="toggleBinView()">
+			<i ng-class="{'button icon ion-ios-trash-outline icon-dark':!binView,'button icon ion-backspace-outline icon-dark':binView}">
+			</i>
+	</a>
+</ion-header-bar>
+
+<ion-content class="has-header">
+
+		<div class = "card" ng-model="calendarEvents" ng-repeat = "friendEvent in friendEvents">
+			<!--Card title is name of the event-->
+			<div class="item item-divider item-left title">
+				{{friendEvent.name}}
+				<a class="item-icon-right button" on-tap="removeEvent($index)" ng-show="binView">
+					<i class="icon button-icon ion-ios-trash" >
+					</i>
+				</a>
+			</div>
+			<!-- BODY OF THE CARD -->
+			<div class="item item-body"
+			{{friendEvent.date|date}} at {{friendEvent.date| date:'h a'}}
+			<!-- TODO: show map -->
+			<p>
+			<a class="item item-icon-right" href="#/overview">
+    	<i class="icon ion-ios-location"></i>
+			Location: "{{friendEvent.location}}"
+  		</a>
+		</p>
+			Share status: {{friendEvent.share}}
+			//shows event friends that are either public or to events to which the friend has been invited
+			<p ng-show ="(friendEvent.share === 'public')||(friendEvent.share === 'invited')">{{friendEvent.friends}}</p>
+		</div>
+		</div>
+	</div>
+
+
+
+</ion-content>
+	<div class="float-add-event-button" >
+ <span class="height-fix">
+    <a class="content">
+      <button class="ion-plus-round button button-icon icon button-positive" ng-click="showAddEventPopup()"> </button>
+    </a>
+   </span>
+</div>
+</ion-view>
